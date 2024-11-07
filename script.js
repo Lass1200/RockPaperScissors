@@ -1,3 +1,6 @@
+let humanScore = 0;
+let computerScore = 0;
+
 function getComputerChoice() {
     const choiceOrdi = Math.floor(Math.random() * 3);
     if (choiceOrdi === 0) {
@@ -9,55 +12,50 @@ function getComputerChoice() {
     }
 }
 
-function getHumanChoice() {
-    let choiceHuman = prompt("Allez, choisis entre rock, paper ou scissors :").toLowerCase();
-    if (choiceHuman === "rock" || choiceHuman === "paper" || choiceHuman === "scissors") {
-        return choiceHuman;
+function playGame() {
+    const buttons = document.querySelectorAll(".choice");
+
+    buttons.forEach(button => {
+        button.addEventListener("click", () => {
+            const humanChoice = button.getAttribute("data-choice");
+            const computerChoice = getComputerChoice();
+            playRound(humanChoice, computerChoice);
+        });
+    });
+}
+
+function playRound(humanChoice, computerChoice) {
+    const resultArea = document.getElementById("result-area");
+    if (humanChoice === computerChoice) {
+        resultArea.value += "Égalité du coup !\n";
+    } else if (
+        (humanChoice === "rock" && computerChoice === "scissors") ||
+        (humanChoice === "scissors" && computerChoice === "paper") ||
+        (humanChoice === "paper" && computerChoice === "rock")
+    ) {
+        resultArea.value += "Vous avez gagné ce round ! " + humanChoice + " bat " + computerChoice + "\n";
+        humanScore++;
     } else {
-        console.log("N'entre que rock, paper ou scissors !");
-        return getHumanChoice(); // Redemande le choix
+        resultArea.value += "L'ordinateur a gagné ce round ! " + computerChoice + " bat " + humanChoice + "\n";
+        computerScore++;
+    }
+    resultArea.value += "Score actuel - Humain : " + humanScore + " | Ordinateur : " + computerScore + "\n";
+    
+    // Check for winner
+    if (humanScore >= 5) {
+        resultArea.value += "Félicitations ! Vous avez gagné le jeu !\n";
+        resetGame();
+    } else if (computerScore >= 5) {
+        resultArea.value += "L'ordinateur a gagné le jeu !\n";
+        resetGame();
     }
 }
 
-function playGame() {
-    // Déclaration des variables de score dans playGame
-    let humanScore = 0;
-    let computerScore = 0;
-     // Boucle pour jouer 5 rounds
-     for (let i = 0; i < 5; i++) {
-        const humanChoice = getHumanChoice();
-        const computerChoice = getComputerChoice();
-        playRound(humanChoice, computerChoice);
-    }
-
-
-    function playRound(humanChoice, computerChoice) {
-        if (humanChoice === computerChoice) {
-            console.log("Égalité du coup !");
-        } else if (
-            (humanChoice === "rock" && computerChoice === "scissors") ||
-            (humanChoice === "scissors" && computerChoice === "paper") ||
-            (humanChoice === "paper" && computerChoice === "rock")
-        ) {
-            console.log("Vous avez gagné ce round ! " + humanChoice + " bat " + computerChoice);
-            humanScore++; // Incrémente le score humain
-        } else {
-            console.log("L'ordinateur a gagné ce round ! " + computerChoice + " bat " + humanChoice);
-            computerScore++; // Incrémente le score de l'ordinateur
-        }
-        console.log("Score actuel - Humain : " + humanScore + " | Ordinateur : " + computerScore);
-    }
-
-    // Déclaration du gagnant final
-    console.log("Score final - Humain : " + humanScore + " | Ordinateur : " + computerScore);
-    if (humanScore > computerScore) {
-        console.log("Félicitations ! Vous avez gagné le jeu !");
-    } else if (computerScore > humanScore) {
-        console.log("L'ordinateur a gagné le jeu !");
-    } else {
-        console.log("C'est une égalité !");
-    }
+function resetGame() {
+    humanScore = 0;
+    computerScore = 0;
+    document.getElementById("result-area").value = ""; // Reset result area
 }
 
 // Lancer le jeu
-playGame();
+document.addEventListener("DOMContentLoaded", playGame); // Ensure the DOM is loaded
